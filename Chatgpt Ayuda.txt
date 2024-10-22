@@ -1,0 +1,207 @@
+Para cumplir con la consigna de la desviación estándar usando Kata TDD y respetando la rúbrica, a continuación te detallo cada paso a seguir con los recursos necesarios, incluido el código y las herramientas para pruebas y manejo de cobertura.
+
+1. Preparación del Entorno
+a. Crear el entorno virtual
+Este paso es crucial para aislar las dependencias del proyecto.
+
+bash
+Copiar código
+python -m venv env
+source env/bin/activate  # Para Linux o Mac
+env\Scripts\activate  # Para Windows
+b. Instalar las dependencias necesarias
+bash
+Copiar código
+pip install unittest
+pip install coverage
+c. Estructura del Proyecto
+Organiza el proyecto con la siguiente estructura:
+
+bash
+Copiar código
+/tu_proyecto
+    /src
+        calculadora.py  # Aquí irá la implementación de las funciones
+    /tests
+        test_calculadora.py  # Aquí estarán las pruebas unitarias
+    README.md  # Instrucciones para ejecutar el proyecto
+    .gitignore  # Excluir archivos innecesarios
+2. Implementación de la Función de Promedio
+a. Primera iteración: Implementación básica
+Archivo calculadora.py:
+python
+Copiar código
+class NoSePuedeCalcular(Exception):
+    pass
+
+def calcular_promedio(elementos):
+    if not elementos:
+        raise NoSePuedeCalcular("Lista vacía.")
+    if any(not isinstance(x, (int, float)) for x in elementos):
+        raise TypeError("Todos los elementos deben ser numéricos.")
+    return sum(elementos) / len(elementos)
+b. Pruebas para la función de promedio
+Archivo test_calculadora.py:
+python
+Copiar código
+import unittest
+from src.calculadora import calcular_promedio, NoSePuedeCalcular
+
+class TestCalculadora(unittest.TestCase):
+
+    def test_lista_vacia(self):
+        with self.assertRaises(NoSePuedeCalcular):
+            calcular_promedio([])
+
+    def test_un_elemento(self):
+        self.assertEqual(calcular_promedio([5]), 5)
+
+    def test_dos_elementos(self):
+        self.assertEqual(calcular_promedio([5, 15]), 10)
+
+    def test_varios_elementos(self):
+        self.assertEqual(calcular_promedio([1, 2, 3, 4, 5]), 3)
+
+    def test_todos_ceros(self):
+        self.assertEqual(calcular_promedio([0, 0, 0, 0]), 0)
+
+    def test_positivos_y_negativos(self):
+        self.assertEqual(calcular_promedio([-1, 1, -2, 2]), 0)
+
+    def test_elementos_no_numericos(self):
+        with self.assertRaises(TypeError):
+            calcular_promedio([1, 'a', 3])
+
+if __name__ == '__main__':
+    unittest.main()
+3. Implementación de la Función de Desviación Estándar
+a. Código para calcular la desviación estándar
+Actualización en calculadora.py:
+python
+Copiar código
+import math
+
+def calcular_desviacion_estandar(elementos):
+    if not elementos:
+        raise NoSePuedeCalcular("Lista vacía.")
+    if any(not isinstance(x, (int, float)) for x in elementos):
+        raise TypeError("Todos los elementos deben ser numéricos.")
+    if len(elementos) == 1:
+        return 0
+    promedio = calcular_promedio(elementos)
+    varianza = sum((x - promedio) ** 2 for x in elementos) / len(elementos)
+    return math.sqrt(varianza)
+b. Pruebas para la función de desviación estándar
+Actualización en test_calculadora.py:
+python
+Copiar código
+from src.calculadora import calcular_desviacion_estandar
+
+class TestDesviacionEstandar(unittest.TestCase):
+
+    def test_lista_vacia(self):
+        with self.assertRaises(NoSePuedeCalcular):
+            calcular_desviacion_estandar([])
+
+    def test_un_elemento(self):
+        self.assertEqual(calcular_desviacion_estandar([5]), 0)
+
+    def test_dos_elementos(self):
+        self.assertAlmostEqual(calcular_desviacion_estandar([5, 15]), 5)
+
+    def test_varios_elementos(self):
+        self.assertAlmostEqual(calcular_desviacion_estandar([1, 2, 3, 4, 5]), 1.4142135623730951)
+
+    def test_todos_ceros(self):
+        self.assertEqual(calcular_desviacion_estandar([0, 0, 0, 0]), 0)
+
+    def test_positivos_y_negativos(self):
+        self.assertAlmostEqual(calcular_desviacion_estandar([-1, 1, -2, 2]), 1.8708286933869707)
+
+    def test_elementos_no_numericos(self):
+        with self.assertRaises(TypeError):
+            calcular_desviacion_estandar([1, 'a', 3])
+
+if __name__ == '__main__':
+    unittest.main()
+4. Ejecución de las Pruebas y Cobertura
+a. Ejecutar pruebas unitarias
+Para ejecutar las pruebas unitarias:
+
+bash
+Copiar código
+python -m unittest discover -s tests
+b. Verificar la cobertura
+Para obtener el reporte de cobertura de las pruebas:
+
+bash
+Copiar código
+coverage run -m unittest discover -s tests
+coverage report
+c. Generar reporte HTML
+Para generar un reporte detallado en HTML:
+
+bash
+Copiar código
+coverage html
+Esto generará una carpeta llamada htmlcov. Abre index.html en un navegador para ver el reporte de cobertura detallado.
+
+5. Refactorización del Código
+Cada vez que superes una prueba, revisa el código para mejorarlo en términos de legibilidad y eficiencia. Refactoriza cuando sea necesario, eliminando redundancias y simplificando funciones.
+
+6. Control de Versiones con Git
+Realiza commits frecuentes en Git cada vez que completes una etapa del proceso de TDD:
+
+bash
+Copiar código
+git init
+git add .
+git commit -m "Implementación de la función de promedio con pruebas."
+Sigue este patrón para cada nueva funcionalidad o refactorización. Finalmente, sube el proyecto a GitHub.
+
+7. Documentación
+En el archivo README.md:
+
+Describe el proyecto y cómo se estructura.
+Explica cómo instalar las dependencias, ejecutar las pruebas y generar los reportes de cobertura.
+Ejemplo de contenido para README.md:
+
+markdown
+Copiar código
+# Proyecto: Cálculo de Promedio y Desviación Estándar con TDD
+
+Este proyecto implementa una calculadora que permite obtener el promedio y la desviación estándar de una lista de números, aplicando la técnica de Test Driven Development (TDD).
+
+## Requisitos
+
+- Python 3.x
+- Unittest
+- Coverage
+
+## Instalación
+
+```bash
+git clone https://github.com/tu_usuario/tu_repositorio.git
+cd tu_repositorio
+python -m venv env
+source env/bin/activate  # Para Linux/Mac
+env\Scripts\activate  # Para Windows
+pip install -r requirements.txt
+Ejecución de Pruebas
+bash
+Copiar código
+python -m unittest discover -s tests
+Generar Reporte de Cobertura
+bash
+Copiar código
+coverage run -m unittest discover -s tests
+coverage report
+coverage html
+less
+Copiar código
+
+### 8. **Entrega Final**
+
+Una vez tengas todo listo, compila el proyecto y sube el repositorio a GitHub. Luego, comparte el enlace con el docente a través del formulario proporcionado&#8203;:contentReference[oaicite:0]{index=0}.
+
+Con este enfoque, cumplirás con los criterios de la rúbrica y asegurarás una buena presentación y
